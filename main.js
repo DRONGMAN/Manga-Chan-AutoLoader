@@ -1,19 +1,14 @@
 ;
-//Сюда вписывать слово которое идет перед главой
-const whatGlava = 'Глава'; 
-//Сюда вписывать слово которое идет перед томом
-const whatTom = 'Том';
-
-const login = 'YourLogin'; //Логин
-const password = 'YourPassword'; //Пароль
-const MangaName = "Name of manga"; //Название манги (проверьте чтобы находилась через поиск)
+const login = 'login'; //Логин
+const password = 'password'; //Пароль
 const SiteAdress = 'https://manga-chan.me/'; //ссылка на сайт
 
 //true - включает отображение браузера, false - выключает
 VisibaleMode = false; 
 
 var AdmZip = require('adm-zip');
-var fs = require('fs');
+const fs = require('fs');
+const { readdirSync, rename } = require('fs');
 
 const puppeteer = require('puppeteer');
 
@@ -38,31 +33,50 @@ try { (async () => {
   const EnterBtnSelector = 'input[value="Вход"]';
   await page.click(EnterBtnSelector);
 
-  const inputSearchSelector = 'input[placeholder="Ищем мангу, серию, автора..."]';
+//удаление ' [mangalib.me]'
+try{ 
+  const files = readdirSync('./files');
+  files.forEach(file => rename(
+    './files' + `/${file}`,
+    './files' + `/${file.split(' [mangalib.me]')[0]+'.zip'}`,
+    err => 1
+  ));
+}catch(err){};
 
 fs.readdir('./files', async function(err, items) {
-  
-  await page.waitForSelector(inputSearchSelector, {timeout: 60000});
-  await page.type(inputSearchSelector, MangaName)
-
-  const SearchSelector = 'img[id="search_button"]';
-  await page.waitForSelector(SearchSelector, {timeout: 60000});
-  await page.click(SearchSelector);
-
-  const MangaPageSelector = '#dle-content > div.content_row > div.manga_row1 > div > h2 > a';
-  await page.waitForSelector(MangaPageSelector, {timeout: 60000});
-  await page.click(MangaPageSelector);
-
-  const addchapterSelector = '#dle-content > div.ext > a:nth-child(1)';
-  await page.waitForSelector(addchapterSelector, {timeout: 60000});
-  await page.click(addchapterSelector);
 
   //обозначение имени, главы и тома
   for (var i=0;i<items.length;i++){
-    var MangaTom = items[i].split(whatTom)[1].split(whatGlava)[0];
-    var MangaGlava = items[i].split(whatGlava)[1].split(' [mangalib.me]')[0];
+    try{
+      var MangaTom = items[i].split('Том ')[1].split(' Глава')[0];
+      var MangaName = items[i].split('Том')[0];
+      var MangaGlava = items[i].split('Глава ')[1].split('.zip')[0];
+    }
+    catch(err){
+      var MangaTom = items[i].split('Tom ')[1].split(' Glava')[0];
+      var MangaName = items[i].split('Tom')[0];
+      var MangaGlava = items[i].split('Glava ')[1].split('.zip')[0];
+    }
 
-    console.log("Now: "+whatTom+' -' + MangaTom+ whatGlava+' -' + MangaGlava);
+    console.log("Now: " + MangaName +'Том - ' + MangaTom+ ' Глава - ' + MangaGlava);
+
+    //поиск манги
+    const inputSearchSelector = 'input[placeholder="Ищем мангу, серию, автора..."]';
+    await page.waitForSelector(inputSearchSelector, {timeout: 60000});
+    await page.type(inputSearchSelector, MangaName)
+
+    // const SearchSelector = 'img[id="search_button"]';
+    // await page.waitForSelector(SearchSelector, {timeout: 60000});
+    // await page.click(SearchSelector);
+
+    //const MangaPageSelector = '#dle-content > div.content_row > div.manga_row1 > div > h2 > a';
+    const MangaPageSelector = '#searchsuggestions > a';
+    await page.waitForSelector(MangaPageSelector, {timeout: 60000});
+    await page.click(MangaPageSelector);
+
+    const addchapterSelector = '#dle-content > div.ext > a:nth-child(1)';
+    await page.waitForSelector(addchapterSelector, {timeout: 60000});
+    await page.click(addchapterSelector);
 
     //удаление последнего файла в архиве
     var zip = new AdmZip('./files/'+String(items[i]));
@@ -92,8 +106,7 @@ fs.readdir('./files', async function(err, items) {
     
     const AddMoreSelector = '#wrap > div.main_fon > table > tbody > tr:nth-child(2) > td.news > a:nth-child(1)'
     await page.waitForSelector(AddMoreSelector, {timeout: 600000});
-    console.log("Finish: "+whatTom+' -' + MangaTom+ whatGlava+' -' + MangaGlava);
-    await page.click(AddMoreSelector);
+    console.log("Finish: "+ MangaName +'Том - ' + MangaTom+ ' Глава - ' + MangaGlava);
 
   }
 console.log("FINALE! if programm doesn't close, just close it");
