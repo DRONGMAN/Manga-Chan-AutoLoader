@@ -9,8 +9,8 @@ const password = 'YourPassword'; //Пароль
 const MangaName = "Name of manga"; //Название манги (проверьте чтобы находилась через поиск)
 const SiteAdress = 'https://manga-chan.me/'; //ссылка на сайт
 
-//True - включает отображение браузера, False - выключает
-VisibaleMode = false; 
+//true - включает отображение браузера, false - выключает
+VisibaleMode = true; 
 
 var AdmZip = require('adm-zip');
 var fs = require('fs');
