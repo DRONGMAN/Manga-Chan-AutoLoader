@@ -3,6 +3,10 @@ const login = 'login'; //Логин
 const password = 'password'; //Пароль
 const SiteAdress = 'https://manga-chan.me/'; //ссылка на сайт
 
+//путь к папке с архивами. обязательно замените \ на /
+//если папка лежит там же где и main.js можно просто написать './Folder'
+const Source = 'C:/Users/user/Documents/myprojectsanddocs/idk/Manga Chan autoLoader/files'; 
+
 //true - включает отображение браузера, false - выключает
 VisibaleMode = false; 
 
@@ -35,15 +39,15 @@ try { (async () => {
 
 //удаление ' [mangalib.me]'
 try{ 
-  const files = readdirSync('./files');
+  const files = readdirSync(Source);
   files.forEach(file => rename(
-    './files' + `/${file}`,
-    './files' + `/${file.split(' [mangalib.me]')[0]+'.zip'}`,
+    Source + `/${file}`,
+    Source + `/${file.split(' [mangalib.me]')[0]+'.zip'}`,
     err => 1
   ));
 }catch(err){};
 
-fs.readdir('./files', async function(err, items) {
+fs.readdir(Source, async function(err, items) {
 
   //обозначение имени, главы и тома
   for (var i=0;i<items.length;i++){
@@ -79,7 +83,7 @@ fs.readdir('./files', async function(err, items) {
     await page.click(addchapterSelector);
 
     //удаление последнего файла в архиве
-    var zip = new AdmZip('./files/'+String(items[i]));
+    var zip = new AdmZip(Source+String(items[i]));
     var zipEntries = zip.getEntries();
     var CountOfFilesInZip = 0;
     zipEntries.forEach(function(zipEntry) {
@@ -87,7 +91,7 @@ fs.readdir('./files', async function(err, items) {
     })
     CountOfFilesInZip --;
     zip.deleteFile((String(CountOfFilesInZip)+".png"))
-    zip.writeZip('./files/'+String(items[i]))
+    zip.writeZip(Source+String(items[i]))
     
     const inputTomSelector = 'input[name="xfield[vol]"]';
     await page.waitForSelector(inputTomSelector, {timeout: 60000});
@@ -99,7 +103,7 @@ fs.readdir('./files', async function(err, items) {
       page.waitForFileChooser(),
       page.click(inputFileSelector),
     ]);
-    await fileChooser.accept(['./files/'+String(items[i])]);
+    await fileChooser.accept([Source+String(items[i])]);
     
     const ButtonToModerSelector = 'button[name="add"]';
     await page.click(ButtonToModerSelector);
