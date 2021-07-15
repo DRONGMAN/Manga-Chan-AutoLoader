@@ -1,13 +1,15 @@
 ;
-const whatGlava = 'Глава'; //как написано слово Глава (по русски или по английски)
-const whatTom = 'Том';//как написано слово Том (по русски или по английски)
+//Сюда вписывать слово которое идет перед главой
+const whatGlava = 'Глава'; 
+//Сюда вписывать слово которое идет перед томом
+const whatTom = 'Том';
 
-const login = 'DedLigma'; //Логин
-const password = 'DEQBVzxV.6vZF5u'; //Пароль
-const MangaName = "Ji Tang Huang Hou"; //Название манги (главное чтоб находилось на сайте)
+const login = 'YourLogin'; //Логин
+const password = 'YourPassword'; //Пароль
+const MangaName = "Name of manga"; //Название манги (проверьте чтобы находилась через поиск)
 
 //True - включает отображение браузера, False - выключает
-VisibaleMode = true; 
+VisibaleMode = false; 
 
 var AdmZip = require('adm-zip');
 var fs = require('fs');
