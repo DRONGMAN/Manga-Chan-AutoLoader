@@ -2,9 +2,9 @@
 const whatGlava = 'Глава'; //как написано слово Глава (по русски или по английски)
 const whatTom = 'Том';//как написано слово Том (по русски или по английски)
 
-const login = 'Login'; //Логин
-const password = 'password'; //Пароль
-const MangaName = "Name"; //Название манги (главное чтоб находилось на сайте)
+const login = 'DedLigma'; //Логин
+const password = 'DEQBVzxV.6vZF5u'; //Пароль
+const MangaName = "Ji Tang Huang Hou"; //Название манги (главное чтоб находилось на сайте)
 
 //True - включает отображение браузера, False - выключает
 VisibaleMode = true; 
@@ -26,7 +26,6 @@ try { (async () => {
   });
 
   await page.goto('https://manga-chan.me/');
-  await page.screenshot({ path: 'example.png' });
 
   const inputLoginSelector = 'input[placeholder="Логин"]';
   const inputPasswordSelector = 'input[placeholder="Пароль"]';
@@ -60,7 +59,7 @@ fs.readdir('./files', async function(err, items) {
     var MangaTom = items[i].split(whatTom)[1].split(whatGlava)[0];
     var MangaGlava = items[i].split(whatGlava)[1].split(' [mangalib.me]')[0];
 
-    console.log("Now: "+whatTom+'-' + MangaTom+ whatGlava+'-' + MangaGlava);
+    console.log("Now: "+whatTom+' -' + MangaTom+ whatGlava+' -' + MangaGlava);
 
     //удаление последнего файла в архиве
     var zip = new AdmZip('./files/'+String(items[i]));
@@ -90,11 +89,11 @@ fs.readdir('./files', async function(err, items) {
     
     const AddMoreSelector = '#wrap > div.main_fon > table > tbody > tr:nth-child(2) > td.news > a:nth-child(1)'
     await page.waitForSelector(AddMoreSelector, {timeout: 600000});
-    console.log();
+    console.log("Finish: "+whatTom+' -' + MangaTom+ whatGlava+' -' + MangaGlava);
     await page.click(AddMoreSelector);
 
   }
-console.log("FINALE! if programm doesn't close, press CTRL+C");
+console.log("FINALE! if programm doesn't close, just close it");
 });
 
 await new Promise (r => {});
