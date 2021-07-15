@@ -5,7 +5,7 @@ const SiteAdress = 'https://manga-chan.me/'; //ссылка на сайт
 
 //путь к папке с архивами. обязательно замените \ на /
 //если папка лежит там же где и main.js можно просто написать './Folder'
-const Source = 'C:/Users/user/Documents/myprojectsanddocs/idk/Manga Chan autoLoader/files'; 
+const Source = 'C:/Path/archives'; 
 
 //true - включает отображение браузера, false - выключает
 VisibaleMode = false; 
