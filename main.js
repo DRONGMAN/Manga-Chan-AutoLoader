@@ -7,6 +7,7 @@ const whatTom = 'Том';
 const login = 'YourLogin'; //Логин
 const password = 'YourPassword'; //Пароль
 const MangaName = "Name of manga"; //Название манги (проверьте чтобы находилась через поиск)
+const SiteAdress = 'https://manga-chan.me/'; //ссылка на сайт
 
 //True - включает отображение браузера, False - выключает
 VisibaleMode = false; 
@@ -27,7 +28,7 @@ try { (async () => {
     height: 800
   });
 
-  await page.goto('https://manga-chan.me/');
+  await page.goto(SiteAdress);
 
   const inputLoginSelector = 'input[placeholder="Логин"]';
   const inputPasswordSelector = 'input[placeholder="Пароль"]';
