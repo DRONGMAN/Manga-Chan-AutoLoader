@@ -10,7 +10,7 @@ const MangaName = "Name of manga"; //Название манги (проверь
 const SiteAdress = 'https://manga-chan.me/'; //ссылка на сайт
 
 //true - включает отображение браузера, false - выключает
-VisibaleMode = true; 
+VisibaleMode = false; 
 
 var AdmZip = require('adm-zip');
 var fs = require('fs');
