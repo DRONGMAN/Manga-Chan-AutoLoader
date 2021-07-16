@@ -2,6 +2,8 @@
 const login = 'login'; //Логин
 const password = 'password'; //Пароль
 const SiteAdress = 'https://manga-chan.me/'; //ссылка на сайт
+//максимальное время на загрузку страницы (на загрузку файла значение умножается на 10)
+const TimeOut = 60000; //в мс
 
 //путь к папке с архивами. обязательно замените \ на /
 //если папка лежит там же где и main.js можно просто написать './Folder'
@@ -35,6 +37,7 @@ try { (async () => {
 
   const inputLoginSelector = 'input[placeholder="Логин"]';
   const inputPasswordSelector = 'input[placeholder="Пароль"]';
+  await page.waitForSelector(inputPasswordSelector, {timeout: TimeOut});
   await page.type(inputLoginSelector, login);
   await page.type(inputPasswordSelector, password);
 
@@ -45,8 +48,10 @@ try { (async () => {
 try{ 
   const files = readdirSync(Source);
   files.forEach(file => rename(
+
     Source + `/${file}`,
     Source + `/${file.split(' [mangalib.me]')[0]+'.zip'}`,
+    Source + `/${file.split('.zip')[0]+'.zip'}`,
     err => 1
   ));
 }catch(err){};
@@ -70,24 +75,24 @@ fs.readdir(Source, async function(err, items) {
 
     //поиск манги
     const inputSearchSelector = 'input[placeholder="Ищем мангу, серию, автора..."]';
-    await page.waitForSelector(inputSearchSelector, {timeout: 60000});
+    await page.waitForSelector(inputSearchSelector, {timeout: TimeOut});
     await page.type(inputSearchSelector, MangaName)
 
     // const SearchSelector = 'img[id="search_button"]';
-    // await page.waitForSelector(SearchSelector, {timeout: 60000});
+    // await page.waitForSelector(SearchSelector, {timeout: TimeOut});
     // await page.click(SearchSelector);
 
     //const MangaPageSelector = '#dle-content > div.content_row > div.manga_row1 > div > h2 > a';
     const MangaPageSelector = '#searchsuggestions > a';
-    await page.waitForSelector(MangaPageSelector, {timeout: 60000});
+    await page.waitForSelector(MangaPageSelector, {timeout: TimeOut});
     await page.click(MangaPageSelector);
 
     const addchapterSelector = '#dle-content > div.ext > a:nth-child(1)';
-    await page.waitForSelector(addchapterSelector, {timeout: 60000});
+    await page.waitForSelector(addchapterSelector, {timeout: TimeOut});
     await page.click(addchapterSelector);
 
     //удаление последнего файла в архиве
-    var zip = new AdmZip(Source+String(items[i]));
+    try{var zip = new AdmZip(Source+String(items[i]));
     var zipEntries = zip.getEntries();
     var CountOfFilesInZip = 0;
     zipEntries.forEach(function(zipEntry) {
@@ -96,24 +101,26 @@ fs.readdir(Source, async function(err, items) {
     CountOfFilesInZip --;
     zip.deleteFile((String(CountOfFilesInZip)+".png"))
     zip.writeZip(Source+String(items[i]))
-    
+  }catch(err){};
     const inputTomSelector = 'input[name="xfield[vol]"]';
-    await page.waitForSelector(inputTomSelector, {timeout: 60000});
+    await page.waitForSelector(inputTomSelector, {timeout: TimeOut});
     await page.type(inputTomSelector, MangaTom);
     const inputGlavaSelector = 'input[name="xfield[ch]"]';
     await page.type(inputGlavaSelector, MangaGlava);
     const inputFileSelector = 'input[name="xfield_manga"]';
-    const [fileChooser] = await Promise.all([
-      page.waitForFileChooser(),
+    
+    try{const [fileChooser] = await Promise.all([
+      page.waitForFileChooser({timeout: TimeOut*10}),
       page.click(inputFileSelector),
     ]);
     await fileChooser.accept([Source+String(items[i])]);
-    
+    }catch(err){};
+
     const ButtonToModerSelector = 'button[name="add"]';
     await page.click(ButtonToModerSelector);
     
     const AddMoreSelector = '#wrap > div.main_fon > table > tbody > tr:nth-child(2) > td.news > a:nth-child(1)'
-    await page.waitForSelector(AddMoreSelector, {timeout: 600000});
+    await page.waitForSelector(AddMoreSelector, {timeout: TimeOut*10});
     console.log("Finish: "+ MangaName +'Том - ' + MangaTom+ ' Глава - ' + MangaGlava);
 
   }
