@@ -7,7 +7,7 @@ const TimeOut = 60000; //в мс
 
 //путь к папке с архивами. обязательно замените \ на /
 //если папка лежит там же где и main.js можно просто написать './Folder'
-const Source = 'C:/pith/path'; 
+const Source = 'C:/Path/archives'; 
 
 //true - включает отображение браузера, false - выключает
 VisibaleMode = false; 
@@ -50,7 +50,8 @@ try{
   files.forEach(file => rename(
 
     Source + `/${file}`,
-    Source + `/${file.split('[mangalib.me]')[0].split(' .zip')[0]+'.zip'}`,
+    Source + `/${file.split(' [mangalib.me]')[0]+'.zip'}`,
+    Source + `/${file.split('.zip')[0]+'.zip'}`,
     err => 1
   ));
 }catch(err){};
@@ -60,14 +61,14 @@ fs.readdir(Source, async function(err, items) {
   //обозначение имени, главы и тома
   for (var i=0;i<items.length;i++){
     try{
-      var MangaTom = Number(items[i].split('Том ')[1].split(' Глава')[0]);
+      var MangaTom = items[i].split('Том ')[1].split(' Глава')[0];
       var MangaName = items[i].split('Том')[0];
-      var MangaGlava = Number(items[i].split('Глава ')[1].split('.zip')[0]);
+      var MangaGlava = items[i].split('Глава ')[1].split('.zip')[0];
     }
     catch(err){
-      var MangaTom = Number(items[i].split('Tom ')[1].split(' Glava')[0]);
+      var MangaTom = items[i].split('Tom ')[1].split(' Glava')[0];
       var MangaName = items[i].split('Tom')[0];
-      var MangaGlava = Number(items[i].split('Glava ')[1].split('.zip')[0]);
+      var MangaGlava = items[i].split('Glava ')[1].split('.zip')[0];
     }
 
     console.log("Now: " + MangaName +'Том - ' + MangaTom+ ' Глава - ' + MangaGlava);
@@ -91,29 +92,28 @@ fs.readdir(Source, async function(err, items) {
     await page.click(addchapterSelector);
 
     //удаление последнего файла в архиве
-    try{var zip = new AdmZip(Source+'/'+String(items[i]));
+    try{var zip = new AdmZip(Source+String(items[i]));
     var zipEntries = zip.getEntries();
     var CountOfFilesInZip = 0;
     zipEntries.forEach(function(zipEntry) {
       CountOfFilesInZip++;
     })
-    console.log(CountOfFilesInZip);
     CountOfFilesInZip --;
     zip.deleteFile((String(CountOfFilesInZip)+".png"))
-    zip.writeZip(Source+'/'+String(items[i]))
+    zip.writeZip(Source+String(items[i]))
   }catch(err){};
     const inputTomSelector = 'input[name="xfield[vol]"]';
     await page.waitForSelector(inputTomSelector, {timeout: TimeOut});
-    await page.type(inputTomSelector, String(MangaTom));
+    await page.type(inputTomSelector, MangaTom);
     const inputGlavaSelector = 'input[name="xfield[ch]"]';
-    await page.type(inputGlavaSelector, String(MangaGlava));
+    await page.type(inputGlavaSelector, MangaGlava);
     const inputFileSelector = 'input[name="xfield_manga"]';
     
     try{const [fileChooser] = await Promise.all([
       page.waitForFileChooser({timeout: TimeOut*10}),
       page.click(inputFileSelector),
     ]);
-    await fileChooser.accept([Source+'/'+String(items[i])]);
+    await fileChooser.accept([Source+String(items[i])]);
     }catch(err){};
 
     const ButtonToModerSelector = 'button[name="add"]';
