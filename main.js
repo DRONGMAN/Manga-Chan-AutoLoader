@@ -50,8 +50,8 @@ try{
   files.forEach(file => rename(
 
     Source + `/${file}`,
-    Source + `/${file.split(' [mangalib.me]')[0]+'.zip'}`,
-    Source + `/${file.split('.zip')[0]+'.zip'}`,
+    Source + `/${String(file).split(' [mangalib.me]')[0]+'.zip'}`,
+    Source + `/${String(file).split('.zip')[0]+'.zip'}`,
     err => 1
   ));
 }catch(err){};
@@ -61,14 +61,14 @@ fs.readdir(Source, async function(err, items) {
   //обозначение имени, главы и тома
   for (var i=0;i<items.length;i++){
     try{
-      var MangaTom = items[i].split('Том ')[1].split(' Глава')[0];
-      var MangaName = items[i].split('Том')[0];
-      var MangaGlava = items[i].split('Глава ')[1].split('.zip')[0];
+      var MangaTom = String(String(items[i]).split('Том ')[1].split(' Глава')[0]);
+      var MangaName = String(String(items[i]).split('Том')[0]);
+      var MangaGlava = String(String(items[i]).split('Глава ')[1].split('.zip')[0]);
     }
     catch(err){
-      var MangaTom = items[i].split('Tom ')[1].split(' Glava')[0];
-      var MangaName = items[i].split('Tom')[0];
-      var MangaGlava = items[i].split('Glava ')[1].split('.zip')[0];
+      var MangaTom = String(String(items[i]).split('Tom ')[1].split(' Glava')[0]);
+      var MangaName = String(String(items[i]).split('Tom')[0]);
+      var MangaGlava = String(String(items[i]).split('Glava ')[1].split('.zip')[0]);
     }
 
     console.log("Now: " + MangaName +'Том - ' + MangaTom+ ' Глава - ' + MangaGlava);
