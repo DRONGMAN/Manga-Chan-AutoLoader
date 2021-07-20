@@ -19,7 +19,6 @@ VisibaleMode = false;
 var AdmZip = require('adm-zip');
 const fs = require('fs');
 const { readdirSync, rename } = require('fs');
-
 const puppeteer = require('puppeteer');
 
 try { (async () => {
@@ -50,28 +49,35 @@ try{
   files.forEach(file => rename(
 
     Source + `/${file}`,
-    Source + `/${file.split(' [mangalib.me]')[0]+'.zip'}`,
-    Source + `/${file.split('.zip')[0]+'.zip'}`,
+    Source + `/${file.split('[mangalib.me]')[0].split('.zip')[0]+'.zip'}`,
     err => 1
   ));
 }catch(err){};
 
 fs.readdir(Source, async function(err, items) {
 
-  //обозначение имени, главы и тома
-  for (var i=0;i<items.length;i++){
-    try{
-      var MangaTom = items[i].split('Том ')[1].split(' Глава')[0];
-      var MangaName = items[i].split('Том')[0];
-      var MangaGlava = items[i].split('Глава ')[1].split('.zip')[0];
-    }
-    catch(err){
-      var MangaTom = items[i].split('Tom ')[1].split(' Glava')[0];
-      var MangaName = items[i].split('Tom')[0];
-      var MangaGlava = items[i].split('Glava ')[1].split('.zip')[0];
-    }
+   //обозначение имени, главы и тома
+   for (var i=1;i<items.length;i++){
 
-    console.log("Now: " + MangaName +'Том - ' + MangaTom+ ' Глава - ' + MangaGlava);
+      var MangaTom = Number(items[i].split('Том ')[1].split(' Глава')[0]);
+      var MangaName = items[i].split('Том')[0];
+      var MangaGlava = Number(items[i].split('Глава ')[1].split('.zip')[0]);
+
+    console.log("Now:    " + MangaName +'Том ' + MangaTom+ ' Глава ' + MangaGlava);
+
+
+    //удаление последнего файла в архиве
+    try{var zip = new AdmZip(Source+'/'+String(items[i]));
+    var zipEntries = zip.getEntries();
+    var CountOfFilesInZip = 0;
+    zipEntries.forEach(function(zipEntry) {
+      CountOfFilesInZip++;
+    })
+    CountOfFilesInZip --;
+    zip.deleteFile((String(CountOfFilesInZip)+".png"))
+    zip.writeZip(Source+'/'+String(items[i]))
+  }catch(err){};
+
 
     //поиск манги
     const inputSearchSelector = 'input[placeholder="Ищем мангу, серию, автора..."]';
@@ -87,33 +93,23 @@ fs.readdir(Source, async function(err, items) {
     await page.waitForSelector(MangaPageSelector, {timeout: TimeOut});
     await page.click(MangaPageSelector);
 
+    //const addchapterSelector = '#dle-content > div.ext' > metoda; //расположение ' уточнить
     const addchapterSelector = '#dle-content > div.ext > a:nth-child(1)';
     await page.waitForSelector(addchapterSelector, {timeout: TimeOut});
     await page.click(addchapterSelector);
 
-    //удаление последнего файла в архиве
-    try{var zip = new AdmZip(Source+String(items[i]));
-    var zipEntries = zip.getEntries();
-    var CountOfFilesInZip = 0;
-    zipEntries.forEach(function(zipEntry) {
-      CountOfFilesInZip++;
-    })
-    CountOfFilesInZip --;
-    zip.deleteFile((String(CountOfFilesInZip)+".png"))
-    zip.writeZip(Source+String(items[i]))
-  }catch(err){};
     const inputTomSelector = 'input[name="xfield[vol]"]';
     await page.waitForSelector(inputTomSelector, {timeout: TimeOut});
-    await page.type(inputTomSelector, MangaTom);
+    await page.type(inputTomSelector, String(MangaTom));
     const inputGlavaSelector = 'input[name="xfield[ch]"]';
-    await page.type(inputGlavaSelector, MangaGlava);
+    await page.type(inputGlavaSelector, String(MangaGlava));
     const inputFileSelector = 'input[name="xfield_manga"]';
     
     try{const [fileChooser] = await Promise.all([
       page.waitForFileChooser({timeout: TimeOut*10}),
       page.click(inputFileSelector),
     ]);
-    await fileChooser.accept([Source+String(items[i])]);
+    await fileChooser.accept([Source+'/'+String(items[i])], {timeout: TimeOut/10});
     }catch(err){};
 
     const ButtonToModerSelector = 'button[name="add"]';
@@ -121,8 +117,10 @@ fs.readdir(Source, async function(err, items) {
     
     const AddMoreSelector = '#wrap > div.main_fon > table > tbody > tr:nth-child(2) > td.news > a:nth-child(1)'
     await page.waitForSelector(AddMoreSelector, {timeout: TimeOut*10});
-    console.log("Finish: "+ MangaName +'Том - ' + MangaTom+ ' Глава - ' + MangaGlava);
+    console.log("Finish: "+ MangaName +'Том ' + MangaTom+ ' Глава ' + MangaGlava);
 
+    console.log("Status: Загружен " + i +'й архив из ' + (items.length - 1));
+    console.log();
   }
 console.log("FINALE! if programm doesn't close, just close it");
 });
