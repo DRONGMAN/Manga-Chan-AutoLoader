@@ -23,5 +23,6 @@ AutoLoader of .zip for manga-chan.me / автозагрузчик .zip архи�
 Использованы Node.js, adm-zip, puppeteer, file-system
 By DedLigma
 https://github.com/DedLigma/
+
 Redact by DRONGMAN
 https://github.com/DRONGMAN
