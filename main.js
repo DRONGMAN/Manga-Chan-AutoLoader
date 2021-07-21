@@ -15,7 +15,6 @@ VisibaleMode = false;
 //——————————————————————————————————————————
 //——————————————————————————————————————————
 
-
 var AdmZip = require('adm-zip');
 const fs = require('fs');
 const { readdirSync, rename } = require('fs');
@@ -54,7 +53,6 @@ try { (async () => {
     console.log("Status: Успешный Вход!");
     console.log();
 
-
 //удаление ' [mangalib.me]'
 try{ 
   const files = readdirSync(Source);
@@ -72,19 +70,14 @@ fs.readdir(Source, async function(err, items) {
     console.log("Status: Кол-во архивов: " + (items.length - 1));
     console.log();
 
-
-
    //обозначение имени, главы и тома
    for (var i=1;i<items.length;i++){
-
-
-
+       
       var MangaTom = Number(items[i].split('Том ')[1].split(' Глава')[0]);
       var MangaName = items[i].split('Том')[0];
       var MangaGlava = Number(items[i].split('Глава ')[1].split('.zip')[0]);
 
     console.log("Status: Загружается: " + MangaName +'Том ' + MangaTom+ ' Глава ' + MangaGlava);
-
 
     //удаление последнего файла в архиве
     try{var zip = new AdmZip(Source+'/'+String(items[i]));
@@ -97,7 +90,6 @@ fs.readdir(Source, async function(err, items) {
     zip.deleteFile((String(CountOfFilesInZip)+".png"))
     zip.writeZip(Source+'/'+String(items[i]))
   }catch(err){};
-
 
     //поиск манги
     const inputSearchSelector = 'input[placeholder="Ищем мангу, серию, автора..."]';
