@@ -21,6 +21,9 @@ const fs = require('fs');
 const { readdirSync, rename } = require('fs');
 const puppeteer = require('puppeteer');
 
+    console.log("Status: Подключение к " + SiteAdress);
+    console.log();
+
 try { (async () => {
   const browser = await puppeteer.launch({
     headless: !VisibaleMode
@@ -32,6 +35,11 @@ try { (async () => {
     height: 800
   });
 
+    console.log("Status: Подключение успешно!");
+    console.log();
+    console.log("Status: Вход в Аккаунт: " + login);
+    console.log();
+
   await page.goto(SiteAdress);
 
   const inputLoginSelector = 'input[placeholder="Логин"]';
@@ -42,6 +50,10 @@ try { (async () => {
 
   const EnterBtnSelector = 'input[value="Вход"]';
   await page.click(EnterBtnSelector);
+
+    console.log("Status: Успешный Вход!");
+    console.log();
+
 
 //удаление ' [mangalib.me]'
 try{ 
@@ -56,14 +68,22 @@ try{
 
 fs.readdir(Source, async function(err, items) {
 
+
+    console.log("Status: Кол-во архивов: " + (items.length - 1));
+    console.log();
+
+
+
    //обозначение имени, главы и тома
    for (var i=1;i<items.length;i++){
+
+
 
       var MangaTom = Number(items[i].split('Том ')[1].split(' Глава')[0]);
       var MangaName = items[i].split('Том')[0];
       var MangaGlava = Number(items[i].split('Глава ')[1].split('.zip')[0]);
 
-    console.log("Now:    " + MangaName +'Том ' + MangaTom+ ' Глава ' + MangaGlava);
+    console.log("Status: Загружается: " + MangaName +'Том ' + MangaTom+ ' Глава ' + MangaGlava);
 
 
     //удаление последнего файла в архиве
@@ -109,15 +129,15 @@ fs.readdir(Source, async function(err, items) {
       page.waitForFileChooser({timeout: TimeOut*10}),
       page.click(inputFileSelector),
     ]);
-    await fileChooser.accept([Source+'/'+String(items[i])], {timeout: TimeOut/10});
+    await fileChooser.accept([Source+'/'+String(items[i])]);
     }catch(err){};
 
     const ButtonToModerSelector = 'button[name="add"]';
-    await page.click(ButtonToModerSelector);
+    await page.click(ButtonToModerSelector, {timeout: TimeOut / 10});
     
     const AddMoreSelector = '#wrap > div.main_fon > table > tbody > tr:nth-child(2) > td.news > a:nth-child(1)'
     await page.waitForSelector(AddMoreSelector, {timeout: TimeOut*10});
-    console.log("Finish: "+ MangaName +'Том ' + MangaTom+ ' Глава ' + MangaGlava);
+    console.log("Status: Загрузка завершена");
 
     console.log("Status: Загружен " + i +'й архив из ' + (items.length - 1));
     console.log();
