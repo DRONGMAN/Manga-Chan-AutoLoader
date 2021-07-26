@@ -123,7 +123,7 @@ fs.readdir(Source, async function(err, items) {
     console.log("Status: Загружен " + (i+1) +'й архив из ' + items.length);
     console.log();
   }
-console.log("FINALE! if programm doesn't close, just close it");
+console.log("FINALE! if programm doesn't close, just close it.");
 });
 
 await new Promise (r => {});
